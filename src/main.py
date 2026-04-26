@@ -8,6 +8,8 @@ bt_resfr_pin = Pin(12, Pin.IN)
 temp = 130
 flag = False
 
+print("Teste")
+
 while True:
     time.sleep(0.1)
     temp += 1
