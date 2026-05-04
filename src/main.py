@@ -1,5 +1,4 @@
 from machine import Pin, I2C
-import ssd1306
 import onewire
 import ds18x20
 import time
@@ -13,7 +12,7 @@ bt_frz_pin = Pin(13, Pin.IN) #botão para diminuir a temperatura
 i2c = I2C(0, scl=Pin(22), sda=Pin(21)) #pin do oled
 oled_width = 128 #largura do oled
 oled_height = 64 #altura do oled
-oled = ssd1306.SSD1306_I2C(oled_width, oled_height, i2c) #oled
+oled = SSD1306_I2C(oled_width, oled_height, i2c) #oled
 
 ow = onewire.OneWire(Pin(14)) #conectando pino ao sensor
 temp_sensor = ds18x20.DS18X20(ow) #sensor de temperatura
@@ -28,16 +27,12 @@ def read_temp(): #leitura da temperatura no sensor
       return temp_sensor.read_temp(roms[0]) #retorna a leitura do sensor
     except Exception as e: #para erro de leitura
       return None
-    
-timeout = 0
 
 print("Teste") #print para evitar erro no github actions 
 
 while True: #loop do programa
   time.sleep(1)
-  timeout += 1
-  if timeout > 29: #Parada após 30 segundos do programa rodando para evitar erro no actions
-     break
+
   temp = read_temp()
   while temp is None: #caso haja erro de leitura, repete-a até conseguir o valor
     temp = read_temp()
@@ -128,6 +123,16 @@ class SSD1306:
         self.fill(0)
         self.show()
 
+    def poweroff(self):
+        self.write_cmd(SET_DISP | 0x00)
+
+    def contrast(self, contrast):
+        self.write_cmd(SET_CONTRAST)
+        self.write_cmd(contrast)
+
+    def invert(self, invert):
+        self.write_cmd(SET_NORM_INV | (invert & 1))
+
     def show(self):
         x0 = 0
         x1 = self.width - 1
@@ -146,5 +151,40 @@ class SSD1306:
     def fill(self, col):
         self.framebuf.fill(col)
 
+    def pixel(self, x, y, col):
+        self.framebuf.pixel(x, y, col)
+
+    def scroll(self, dx, dy):
+        self.framebuf.scroll(dx, dy)
+
     def text(self, string, x, y, col=1):
         self.framebuf.text(string, x, y, col)
+
+
+class SSD1306_I2C(SSD1306):
+    def __init__(self, width, height, i2c, addr=0x3c, external_vcc=False):
+        self.i2c = i2c
+        self.addr = addr
+        self.temp = bytearray(2)
+        # Add an extra byte to the data buffer to hold an I2C data/command byte
+        # to use hardware-compatible I2C transactions.  A memoryview of the
+        # buffer is used to mask this byte from the framebuffer operations
+        # (without a major memory hit as memoryview doesn't copy to a separate
+        # buffer).
+        self.buffer = bytearray(((height // 8) * width) + 1)
+        self.buffer[0] = 0x40  # Set first byte of data buffer to Co=0, D/C=1
+        self.framebuf = framebuf.FrameBuffer1(memoryview(self.buffer)[1:], width, height)
+        super().__init__(width, height, external_vcc)
+
+    def write_cmd(self, cmd):
+        self.temp[0] = 0x80 # Co=1, D/C#=0
+        self.temp[1] = cmd
+        self.i2c.writeto(self.addr, self.temp)
+
+    def write_framebuf(self):
+        # Blast out the frame buffer using a single I2C transaction to support
+        # hardware I2C interfaces.
+        self.i2c.writeto(self.addr, self.buffer)
+
+    def poweron(self):
+        pass
