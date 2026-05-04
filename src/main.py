@@ -2,7 +2,6 @@ from machine import Pin, I2C
 import onewire
 import ds18x20
 import time
-import framebuff
 
 led_temp_pin = Pin(23, Pin.OUT) #led de alerta
 led_evac_pin = Pin(19, Pin.OUT) #led de evacuação
