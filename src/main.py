@@ -28,11 +28,16 @@ def read_temp(): #leitura da temperatura no sensor
       return temp_sensor.read_temp(roms[0]) #retorna a leitura do sensor
     except Exception as e: #para erro de leitura
       return None
+    
+timeout = 0
 
 print("Teste") #print para evitar erro no github actions 
 
 while True: #loop do programa
   time.sleep(1)
+  timeout += 1
+  if timeout > 29: #Parada após 30 segundos do programa rodando para evitar erro no actions
+     break
   temp = read_temp()
   while temp is None: #caso haja erro de leitura, repete-a até conseguir o valor
     temp = read_temp()
