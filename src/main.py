@@ -2,7 +2,7 @@ from machine import Pin, I2C
 import onewire
 import ds18x20
 import time
-import framebuff
+import framebuf
 
 
 #classe do ssd1306, o github Actions não está programado para um arquivo além do .py, portanto foi necessário colar o import para a main
@@ -113,7 +113,7 @@ class SSD1306_I2C(SSD1306):
         # buffer).
         self.buffer = bytearray(((height // 8) * width) + 1)
         self.buffer[0] = 0x40  # Set first byte of data buffer to Co=0, D/C=1
-        self.framebuf = framebuf.FrameBuffer(memoryview(self.buffer)[1:], width, height)
+        self.framebuf = framebuf.FrameBuffer1(memoryview(self.buffer)[1:], width, height)
         super().__init__(width, height, external_vcc)
 
     def write_cmd(self, cmd):
