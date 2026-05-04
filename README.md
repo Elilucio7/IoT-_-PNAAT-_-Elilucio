@@ -47,6 +47,7 @@ Para um fluxo de trabalho mais ágil, o projeto foi minimalista:
 - uso de apenas dois leds, além do display, para representar um sistema de alarme robusto
 - inexistência de um sistema de resfriamento
 - simples botão para disparar um alarme de evacuação
+- como não havia maneiras de adicionar outro arquivo .py ao projeto além do main.py, foi necessário fazer uma cópia de parte do arquivo para a main, mantendo o oled no projeto.
 
 ---
 
@@ -60,7 +61,7 @@ Ambos os leds funcionam de acordo com a lógica do sistema e as mensagens aprese
 ## 6️⃣ Comentários Adicionais (Opcional)
 
 Por mais que a solução tenha atingido minhas espectativas, sou ciente de que é simplória para o problema apresentado, havendo múltiplos outros fatores e problemas que exijam mais cuidado na produção de algo nesse escopo.
-Houveram problemas para o funcionamento correto com o github actions, porém eram apenas causados pelo nome da conexão com o wokwi não estar correspondente com o pedido pelo .yml
+Houveram problemas para o funcionamento correto com o github actions, porém eram apenas causados pelo nome da conexão com o wokwi não estar correspondente com o pedido pelo .yml e a não possibilidade de adição de outros arquivos .py para importação na main.
 Por fim, o projeto prático foi extremamente útil para fixar os aprendizados do curso de uma maneira interativa e desafiadora, tanto para funcionamento do código quanto às ligações dos circuitos da parte eletrônica.
 
 ---
